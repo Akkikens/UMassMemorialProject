@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Form, Input, Select } from 'semantic-ui-react';
-import { Entry } from '../interface/types'; 
+import { Entry } from '../../interface/types'; 
 
 
 interface FormComponentProps {
@@ -58,6 +58,7 @@ const FormComponent: React.FC<FormComponentProps> = ({ addEntry }) => {
         control={Input}
         label='First Name'
         placeholder='First Name'
+        style={{ borderColor: '#00b5ad' }}
         name='firstName'
         value={formData.firstName}
         onChange={handleChange}

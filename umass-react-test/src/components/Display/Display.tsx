@@ -1,6 +1,6 @@
 import React from 'react';
 import { Table, Button, Icon } from 'semantic-ui-react';
-import { Entry } from '../interface/types'; 
+import { Entry } from '../../interface/types'; 
 
 interface DisplayProps {
   entries: Entry[];
@@ -32,7 +32,7 @@ const Display: React.FC<DisplayProps> = ({ entries, deleteEntry, sortEntries, so
 
   return (
     <div>
-    <Table sortable celled>
+    <Table sortable celled color='teal' striped >
       <Table.Header>
         <Table.Row>
           <Table.HeaderCell onClick={() => sortEntries('firstName')}>

@@ -22,7 +22,12 @@
     border: none;
     cursor: pointer;
   }
-  
+
+.gradient-background {
+  background: linear-gradient(to right, #6a11cb, #2575fc); 
+  color: white; 
+}
+
   .form-container button:hover {
     background-color: #0056b3;
   }
@@ -47,3 +52,22 @@
   .display-container th {
     background-color: #f2f2f2;
   }
+
+  /* In your CSS file */
+.custom-form-field {
+  border-color: #00b5ad !important; /* Teal border */
+}
+
+.custom-form-button {
+  background-color: #00b5ad !important; /* Teal background */
+  color: white !important;
+}
+
+.custom-table {
+  background-color: #f9fafb; /* Light background for table */
+}
+
+.custom-clear-button {
+  background-color: #f2711c !important; /* Orange background */
+  color: white !important;
+}

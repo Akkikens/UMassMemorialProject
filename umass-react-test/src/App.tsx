@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'; // Note the change here
-import FormComponent from './components/FormComponent';
-import Display from './components/Display';
+import FormComponent from './components/FormComponent/FormComponent';
+import Display from './components/Display/Display';
 import './App.css';
-import StartPage from './components/StartPage';
+import StartPage from './components/StartPage/StartPage';
 import 'semantic-ui-css/semantic.min.css';
 import { Entry } from './interface/types';
 
