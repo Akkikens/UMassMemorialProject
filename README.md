@@ -39,6 +39,8 @@ Local Storage: Entries are saved in the browser's local storage for persistence.
 
 ## Credits
 React
+Typescript
+Jest
 Semantic UI React
 Bootstrap
 
