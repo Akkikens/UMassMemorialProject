@@ -9,6 +9,7 @@ import './App.css';
 import 'semantic-ui-css/semantic.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import HeaderComponent from './components/Header/header';
+import SearchBarWithButton from './components/Search/Search';
 
 const App: React.FC = () => {
   const [entries, setEntries] = useState<Entry[]>(() => {
@@ -41,6 +42,14 @@ const addOrUpdateEntry = (entryData: Entry | Omit<Entry, 'id'>) => {
   const deleteEntry = (id: number) => {
     setEntries((prevEntries) => prevEntries.filter((entry) => entry.id !== id));
   };
+
+  const filteredEntries = query
+    ? entries.filter((entry) =>
+        Object.values(entry).some((value) =>
+          value.toString().toLowerCase().includes(query.toLowerCase())
+        )
+      )
+    : entries;
 
   const sortEntries = (field: keyof Entry) => {
     const newDirection = sortConfig.column === field && sortConfig.direction === 'ascending' ? 'descending' : 'ascending';
@@ -79,24 +88,34 @@ const addOrUpdateEntry = (entryData: Entry | Omit<Entry, 'id'>) => {
     setEditEntryId(null); // Reset edit state
   };
 
+  const appStyle = {
+    backgroundColor: '#f5f5f5', // Light grey background
+    minHeight: '100vh',
+    minWidth: '100vw',
+    color: '#333', // Keeping text color dark for contrast
+    padding: '1rem',
+  };
+
   return (
     <Router>
+      <div style={appStyle}>
       <HeaderComponent />
+      <br />
       <Routes>
         <Route path="/" element={<StartPage />} />
         <Route path="/app" element={
           <>
             <FormComponent addOrUpdateEntry={addOrUpdateEntry} existingEntry={getEntryToEdit()} />
-
-            <input
+            <SearchBarWithButton query={query} setQuery={setQuery} />
+            {/* <input
             type="text"
             placeholder="Search..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             style={{ margin: '10px 0', padding: '10px', width: '100%', maxWidth: '400px' }}
-            />
+            /> */}
             <Display
-              entries={entries}
+              entries={filteredEntries}
               editEntry={editEntry}
               deleteEntry={deleteEntry}
               sortConfig={sortConfig}
@@ -106,6 +125,7 @@ const addOrUpdateEntry = (entryData: Entry | Omit<Entry, 'id'>) => {
           </>
         } />
       </Routes>
+      </div>
     </Router>
   );
 };

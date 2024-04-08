@@ -14,6 +14,7 @@ const mockDeleteEntry = jest.fn();
 const mockSortEntries = jest.fn();
 const mockSortConfig = { column: null, direction: null as 'ascending' | 'descending' | null };
 const mockClearSort = jest.fn();
+const mockEditEntry = jest.fn();
 
 test('renders the Display component', () => {
   render(
@@ -23,6 +24,7 @@ test('renders the Display component', () => {
       sortEntries={mockSortEntries} 
       sortConfig={mockSortConfig}
       clearSort={mockClearSort} 
+      editEntry={mockEditEntry} 
     />
   );
   // Assertions can follow here, for example:

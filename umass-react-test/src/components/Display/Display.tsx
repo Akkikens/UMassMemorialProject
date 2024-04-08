@@ -71,95 +71,79 @@ const Display: React.FC<DisplayProps> = ({ entries, editEntry, deleteEntry, sort
 
   return (
     <div>
-      <Table sortable celled color='teal' striped>
-        <Table.Header>
-          <Table.Row>
-            <Table.HeaderCell onClick={() => sortEntries('firstName')}>
-              First Name {renderSortIcon('firstName')}
-            </Table.HeaderCell>
-            <Table.HeaderCell onClick={() => sortEntries('lastName')}>
-              Last Name {renderSortIcon('lastName')}
-            </Table.HeaderCell>
-            <Table.HeaderCell onClick={() => sortEntries('email')}>
-              Email {renderSortIcon('email')}
-            </Table.HeaderCell>
-            <Table.HeaderCell onClick={() => sortEntries('birthday')}>
-              Birthday {renderSortIcon('birthday')}
-            </Table.HeaderCell>
-            <Table.HeaderCell onClick={() => sortEntries('bloodGroup')}>
-              Blood Group {renderSortIcon('bloodGroup')}
-            </Table.HeaderCell>
-            <Table.HeaderCell>
-              Action
-            </Table.HeaderCell>
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>
+      <table className="table table-hover table-striped">
+        <thead>
+          <tr>
+            <th scope="col" onClick={() => sortEntries('firstName')}>First Name {renderSortIcon('firstName')}</th>
+            <th scope="col" onClick={() => sortEntries('lastName')}>Last Name {renderSortIcon('lastName')}</th>
+            <th scope="col" onClick={() => sortEntries('email')}>Email {renderSortIcon('email')}</th>
+            <th scope="col" onClick={() => sortEntries('birthday')}>Birthday {renderSortIcon('birthday')}</th>
+            <th scope="col" onClick={() => sortEntries('bloodGroup')}>Blood Group {renderSortIcon('bloodGroup')}</th>
+            <th scope="col">Action</th>
+          </tr>
+        </thead>
+        <tbody>
           {entries.map((entry) => (
-            <Table.Row key={entry.id}>
-              <Table.Cell>{entry.firstName}</Table.Cell>
-              <Table.Cell>{entry.lastName}</Table.Cell>
-              <Table.Cell>{entry.email}</Table.Cell>
-              <Table.Cell>{formatDate(entry.birthday)}</Table.Cell>
-              <Table.Cell>{entry.bloodGroup}</Table.Cell>
-              <Table.Cell>
-                <Button.Group>
-                  <Button color='blue' onClick={() => handleEdit(entry)}>Edit</Button>
-                  <Button color='red' onClick={() => deleteEntry(entry.id)}>Delete</Button>
-                </Button.Group>
-              </Table.Cell>
-            </Table.Row>
+            <tr key={entry.id}>
+              <td>{entry.firstName}</td>
+              <td>{entry.lastName}</td>
+              <td>{entry.email}</td>
+              <td>{formatDate(entry.birthday)}</td>
+              <td>{entry.bloodGroup}</td>
+              <td>
+                <div className="btn-group" role="group">
+                  <button type="button" className="btn btn-primary" onClick={() => handleEdit(entry)}>Edit</button>
+                  <button type="button" className="btn btn-danger" onClick={() => deleteEntry(entry.id)}>Delete</button>
+                </div>
+              </td>
+            </tr>
           ))}
-        </Table.Body>
-      </Table>
-      <Button onClick={clearSort} color="blue">Clear Sort</Button>
+        </tbody>
+      </table>
+      <button className="btn btn-info" onClick={clearSort}>Clear Sort</button>
 
+      {/* Assuming Modal is a custom or third-party component that already styles itself appropriately */}
       <Modal open={open} onClose={handleClose}>
         <Modal.Header>Edit Entry</Modal.Header>
         <Modal.Content>
-          <Form>
-            <Form.Field>
-              <label>First Name</label>
-              <input name='firstName' value={editedEntry?.firstName} onChange={handleChange} />
-            </Form.Field>
-            <Form.Field>
-              <label>Last Name</label>
-              <input name='lastName' value={editedEntry?.lastName} onChange={handleChange} />
-            </Form.Field>
-            <Form.Field>
-              <label>Email</label>
-              <input name='email' value={editedEntry?.email} onChange={handleChange} />
-            </Form.Field>
-            <Form.Field>
-              <label>Birthday</label>
-              <input type='date' name='birthday' value={editedEntry?.birthday} onChange={handleChange} />
-            </Form.Field>
-            <Form.Field
-          control={Select}
-          label="Blood Group"
-          options={bloodGroupOptions}
-          placeholder="Select Blood Group"
-          name="bloodGroup"
-          value={editedEntry?.bloodGroup || ''}
-          onChange={(_: React.ChangeEvent<HTMLInputElement>, { value }: any) => setEditedEntry({ ...editedEntry!, bloodGroup: value })}
-        />
-      </Form>
+          <div className="form-group">
+            <label>First Name</label>
+            <input className="form-control" name='firstName' value={editedEntry?.firstName} onChange={handleChange} />
+          </div>
+          <div className="form-group">
+            <label>Last Name</label>
+            <input className="form-control" name='lastName' value={editedEntry?.lastName} onChange={handleChange} />
+          </div>
+          <div className="form-group">
+            <label>Email</label>
+            <input className="form-control" name='email' value={editedEntry?.email} onChange={handleChange} />
+          </div>
+          <div className="form-group">
+            <label>Birthday</label>
+            <input className="form-control" type='date' name='birthday' value={editedEntry?.birthday} onChange={handleChange} />
+          </div>
+          <div className="form-group">
+            <label>Blood Group</label>
+            <select 
+              className="form-control" 
+              name="bloodGroup" 
+              value={editedEntry?.bloodGroup || ''} 
+              onChange={(e) => setEditedEntry({ ...editedEntry!, bloodGroup: e.target.value })}
+            >
+              {bloodGroupOptions.map(option => (
+                <option key={option.key} value={option.value}>{option.text}</option>
+              ))}
+            </select>
+          </div>
         </Modal.Content>
         <Modal.Actions>
-          <Button color='black' onClick={handleClose}>
-            Cancel
-          </Button>
-          <Button
-            content="Save"
-            labelPosition='right'
-            icon='checkmark'
-            onClick={handleSave}
-            positive
-          />
+          <button className="btn btn-secondary" onClick={handleClose}>Cancel</button>
+          <button className="btn btn-success" onClick={handleSave}>Save</button>
         </Modal.Actions>
       </Modal>
     </div>
   );
 };
+
 
 export default Display;

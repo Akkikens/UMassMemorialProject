@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Form, Input, Select , Grid , Message } from 'semantic-ui-react';
+import { Container } from 'react-bootstrap';
 import { Entry } from '../../interface/types'; 
 
 interface FormComponentProps {
@@ -172,7 +173,10 @@ const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
       {Object.values(errors).length > 0 && (
         <Message error header="Validation Error" list={Object.values(errors)} />
       )}
-      <Button type='submit' primary>Submit</Button>
+      <Container className="d-flex justify-content-center my-4">
+      <Button type='submit' className='' primary>Submit</Button>
+    </Container>
+      
     </Form>
   );
 };
