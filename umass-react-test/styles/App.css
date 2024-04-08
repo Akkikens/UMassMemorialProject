@@ -1,0 +1,49 @@
+/* Style for the form container */
+.form-container {
+    max-width: 400px;
+    margin: 0 auto;
+  }
+  
+  .form-container label {
+    display: block;
+    margin-bottom: 8px;
+  }
+  
+  .form-container input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 16px;
+  }
+  
+  .form-container button {
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .form-container button:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Style for the display container */
+  .display-container {
+    margin-top: 40px;
+  }
+  
+  .display-container table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .display-container th,
+  .display-container td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  .display-container th {
+    background-color: #f2f2f2;
+  }
