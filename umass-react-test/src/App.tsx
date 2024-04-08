@@ -11,26 +11,32 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import HeaderComponent from './components/Header/header';
 
 const App: React.FC = () => {
-  // Initialize state with data from localStorage, or empty array if none
   const [entries, setEntries] = useState<Entry[]>(() => {
     const savedEntries = localStorage.getItem('entries');
     return savedEntries ? JSON.parse(savedEntries) : [];
   });
   const [query, setQuery] = useState<string>('');
   const [sortConfig, setSortConfig] = useState<{ column: keyof Entry | null; direction: 'ascending' | 'descending' | null }>({ column: null, direction: null });
+  const [editEntryId, setEditEntryId] = useState<number | null>(null);  // Add this line
 
   useEffect(() => {
-    // Update localStorage whenever entries change
     localStorage.setItem('entries', JSON.stringify(entries));
   }, [entries]);
 
-  const clearSort = () => {
-    setSortConfig({ column: null, direction: null });
-  };
 
-  const addEntry = (entry: Omit<Entry, 'id'>) => {
-    setEntries((prevEntries) => [...prevEntries, { ...entry, id: Date.now() }]);
-  };
+const clearSort = () => {
+  setSortConfig({ column: null, direction: null });
+};
+
+const addOrUpdateEntry = (entryData: Entry | Omit<Entry, 'id'>) => {
+  if ('id' in entryData) {
+    // Update existing entry
+    setEntries(prevEntries => prevEntries.map(entry => entry.id === entryData.id ? { ...entryData } : entry));
+  } else {
+    // Add new entry with a new ID
+    setEntries(prevEntries => [...prevEntries, { ...entryData, id: Date.now() }]);
+  }
+};
 
   const deleteEntry = (id: number) => {
     setEntries((prevEntries) => prevEntries.filter((entry) => entry.id !== id));
@@ -51,32 +57,53 @@ const App: React.FC = () => {
 
   // Sorting moved here if needed outside Display component, else keep sort logic in Display
   const displayedEntries = entries.filter((entry) =>
-    Object.values(entry).some((value) => value.toString().toLowerCase().includes(query.toLowerCase()))
-  );
+  Object.values(entry).some((value) =>
+    value?.toString().toLowerCase().includes(query.toLowerCase())
+  )
+);
+
+  const cancelEdit = () => {
+    setEditEntryId(null); // Clear edit state
+  };
+
+  const getEntryToEdit = () => {
+    return entries.find(entry => entry.id === editEntryId) || null;
+  };
+
+  const editEntry = (editedEntry: Entry) => {
+    setEntries(prevEntries =>
+      prevEntries.map(entry => 
+        entry.id === editedEntry.id ? editedEntry : entry
+      )
+    );
+    setEditEntryId(null); // Reset edit state
+  };
 
   return (
     <Router>
+      <HeaderComponent />
       <Routes>
         <Route path="/" element={<StartPage />} />
         <Route path="/app" element={
-          <div>
-            <HeaderComponent/>
-            <FormComponent addEntry={addEntry} />
+          <>
+            <FormComponent addOrUpdateEntry={addOrUpdateEntry} existingEntry={getEntryToEdit()} />
+
             <input
-              type="text"
-              placeholder="Search..."
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              style={{ margin: '10px 0', padding: '10px', width: '100%', maxWidth: '400px' }}
+            type="text"
+            placeholder="Search..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            style={{ margin: '10px 0', padding: '10px', width: '100%', maxWidth: '400px' }}
             />
             <Display
-              entries={displayedEntries}
+              entries={entries}
+              editEntry={editEntry}
               deleteEntry={deleteEntry}
               sortConfig={sortConfig}
               sortEntries={sortEntries}
               clearSort={clearSort}
             />
-          </div>
+          </>
         } />
       </Routes>
     </Router>

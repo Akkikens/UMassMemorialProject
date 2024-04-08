@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Form, Input, Select , Grid , Message } from 'semantic-ui-react';
 import { Entry } from '../../interface/types'; 
 
-
 interface FormComponentProps {
-  addEntry: (entry: Omit<Entry, 'id'>) => void;
+  addOrUpdateEntry: (entryData: Entry | Omit<Entry, 'id'>) => void;
+  existingEntry: Entry | null;
+  cancelEdit?: () => void; // Add this line if it's needed
 }
 
 const bloodGroupOptions = [
@@ -18,7 +19,8 @@ const bloodGroupOptions = [
   { key: 'o-', value: 'O-', text: 'O-' },
 ];
 
-const FormComponent: React.FC<FormComponentProps> = ({ addEntry }) => {
+const FormComponent: React.FC<FormComponentProps> = ({ addOrUpdateEntry, existingEntry, cancelEdit
+ }) => {
   const [formData, setFormData] = useState<Omit<Entry, 'id'>>({
     firstName: '',
     lastName: '',
@@ -26,7 +28,13 @@ const FormComponent: React.FC<FormComponentProps> = ({ addEntry }) => {
     birthday: '',
     bloodGroup: ''
   });
-  const [error, setError] = useState('');
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
+  useEffect(() => {
+    if (existingEntry) {
+      setFormData(existingEntry);
+    }
+  }, [existingEntry]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>, { name, value }: any) => {
     setFormData({ ...formData, [name]: value });
@@ -36,103 +44,137 @@ const FormComponent: React.FC<FormComponentProps> = ({ addEntry }) => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const isFormValid = () => {
-    // Here we check if any of the form fields are empty
-    return formData.firstName && formData.lastName && formData.email && formData.birthday && formData.bloodGroup;
+  const validateForm = () => {
+    const newErrors: { [key: string]: string } = {};
+
+    if (!formData.firstName) {
+      newErrors.firstName = 'Please enter your first name.';
+    }
+    if (!formData.lastName) {
+      newErrors.lastName = 'Please enter your last name.';
+    }
+    if (!formData.email) {
+      newErrors.email = 'Please enter your email address.';
+    } else if (!validateEmail(formData.email)) {
+      newErrors.email = 'Please enter a valid email address.';
+    }
+    if (!formData.birthday) {
+      newErrors.birthday = 'Please enter your birthday.';
+    }
+    if (!formData.bloodGroup) {
+      newErrors.bloodGroup = 'Please select your blood group.';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!validateEmail(formData.email)) {
-      setError('Please enter a valid email address.');
-      return;
-    }
-    if (isFormValid()) {
-      addEntry(formData);
-      setError(''); // Clear any previous errors
-      setFormData({ firstName: '', lastName: '', email: '', birthday: '', bloodGroup: '' }); // Reset form
+const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+  if (validateForm()) {
+    if (existingEntry) {
+      // Update an existing entry, including the id
+      addOrUpdateEntry({ ...formData, id: existingEntry.id });
     } else {
-      setError('All fields must be filled out'); // Set an error message
+      // Add a new entry, omitting the id
+      addOrUpdateEntry(formData);
     }
-  };
+    // Reset form
+    setFormData({ firstName: '', lastName: '', email: '', birthday: '', bloodGroup: '' });
+  }
+};
+
 
   const validateEmail = (email: string) => {
-    return email.includes('@');
+    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
   };
 
-  const inputStyle = { paddingLeft: '10px', marginLeft: '10px'};
+  const inputStyle = { paddin: '1rem',  };
+
+  const formPaddingStyle = {
+    padding: '1rem', 
+  };
 
   return (
-      <Form error={!!error}>
-        <Grid stackable>
-        <Grid.Row columns="equal"> 
-        <Grid.Column width={8}>
-              <Form.Field
-                control={Input}
-                label='First Name'
-                placeholder='First Name'
-                name='firstName'
-                value={formData.firstName}
-                onChange={handleChange}
-                style={inputStyle}
-              />
-            </Grid.Column>
-            <Grid.Column>
-              <Form.Field
-                control={Input}
-                label='Last Name'
-                placeholder='Last Name'
-                name='lastName'
-                value={formData.lastName}
-                onChange={handleChange}
-                style={inputStyle}
-              />
-            </Grid.Column>
-          </Grid.Row>
-      <Grid.Row columns={1}>
-        <Grid.Column>
-          <Form.Field
-            control={Input}
-            label='Email'
-            placeholder='Email'
-            name='email'
-            type='email'
-            value={formData.email}
-            onChange={handleChange}
-            style={inputStyle}
-          />
-        </Grid.Column>
-      </Grid.Row>
-      <Grid.Row columns={2}>
-        <Grid.Column>
-          <Form.Field
-            control={Input}
-            label='Birthday'
-            placeholder='Birthday'
-            name='birthday'
-            type='date'
-            value={formData.birthday}
-            onChange={handleChange}
-            style={inputStyle}
-          />
-        </Grid.Column>
-        <Grid.Column>
-          <Form.Field
-            control={Select}
-            label='Blood Group'
-            options={bloodGroupOptions}
-            placeholder='Select Blood Group'
-            name='bloodGroup'
-            value={formData.bloodGroup}
-            onChange={handleSelectChange}
-          />
-        </Grid.Column>
-      </Grid.Row>
-    </Grid>
-    {error && <Message error content={error} />}
-    <Button type='submit' onClick={handleSubmit} primary>Submit</Button>
-  </Form>
-);
+    <Form onSubmit={handleSubmit}>
+      <Grid stackable>
+        <Grid.Row columns="equal">
+          <Grid.Column>
+            <Form.Field
+              control={Input}
+              label={() => <label style={{ paddingLeft: '20px' }}>First Name</label>}
+              placeholder="First Name"
+              name="firstName"
+              value={formData.firstName}
+              onChange={handleChange}
+              error={errors.firstName ? true : false} // Ensure error is a boolean or a string message
+              style={inputStyle} // This applies to the Input, not the label
+            />
+          </Grid.Column>
+          <Grid.Column>
+            <Form.Field
+              control={Input}
+              label="Last Name"
+              placeholder="Last Name"
+              name="lastName"
+              value={formData.lastName}
+              onChange={handleChange}
+              error={errors.lastName}
+              style={inputStyle}
+            />
+          </Grid.Column>
+        </Grid.Row>
+        <Grid.Row>
+          <Grid.Column>
+            <Form.Field
+              control={Input}
+              label={() => <label style={{ paddingLeft: '20px' }}>Email</label>}
+              placeholder="Email"
+              name="email"
+              type="email"
+              value={formData.email}
+              onChange={handleChange}
+              error={errors.email}
+              style={inputStyle}
+            />
+          </Grid.Column>
+        </Grid.Row>
+        <Grid.Row columns="equal">
+          <Grid.Column>
+            <Form.Field
+              control={Input}
+              label={() => <label style={{ paddingLeft: '20px' }}>Birthday</label>}
+              placeholder="Birthday"
+              name="birthday"
+              type="date"
+              value={formData.birthday}
+              onChange={handleChange}
+              error={errors.birthday}
+              style={inputStyle}
+            />
+          </Grid.Column>
+          <Grid.Column>
+            <Form.Field
+              control={Select}
+              label="Blood Group"
+              options={bloodGroupOptions}
+              placeholder="Select Blood Group"
+              name="bloodGroup"
+              value={formData.bloodGroup}
+              onChange={handleSelectChange}
+              error={errors.bloodGroup}
+              style={inputStyle}
+            />
+          </Grid.Column>
+        </Grid.Row>
+      </Grid>
+      {Object.values(errors).length > 0 && (
+        <Message error header="Validation Error" list={Object.values(errors)} />
+      )}
+      <Button type='submit' primary>Submit</Button>
+    </Form>
+  );
 };
 
 export default FormComponent;
