@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Form, Input, Select } from 'semantic-ui-react';
+import { Button, Form, Input, Select , Grid , Message } from 'semantic-ui-react';
 import { Entry } from '../../interface/types'; 
 
 
@@ -43,6 +43,10 @@ const FormComponent: React.FC<FormComponentProps> = ({ addEntry }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validateEmail(formData.email)) {
+      setError('Please enter a valid email address.');
+      return;
+    }
     if (isFormValid()) {
       addEntry(formData);
       setError(''); // Clear any previous errors
@@ -52,56 +56,83 @@ const FormComponent: React.FC<FormComponentProps> = ({ addEntry }) => {
     }
   };
 
+  const validateEmail = (email: string) => {
+    return email.includes('@');
+  };
+
+  const inputStyle = { paddingLeft: '10px', marginLeft: '10px'};
+
   return (
-    <Form>
-      <Form.Field
-        control={Input}
-        label='First Name'
-        placeholder='First Name'
-        style={{ borderColor: '#00b5ad' }}
-        name='firstName'
-        value={formData.firstName}
-        onChange={handleChange}
-      />
-      <Form.Field
-        control={Input}
-        label='Last Name'
-        placeholder='Last Name'
-        name='lastName'
-        value={formData.lastName}
-        onChange={handleChange}
-      />
-      <Form.Field
-        control={Input}
-        label='Email'
-        placeholder='Email'
-        name='email'
-        type='email'
-        value={formData.email}
-        onChange={handleChange}
-      />
-      <Form.Field
-        control={Input}
-        label='Birthday'
-        placeholder='Birthday'
-        name='birthday'
-        type='date'
-        value={formData.birthday}
-        onChange={handleChange}
-      />
-      <Form.Field
-        control={Select}
-        label='Blood Group'
-        options={bloodGroupOptions}
-        placeholder='Select Blood Group'
-        name='bloodGroup'
-        value={formData.bloodGroup}
-        onChange={handleSelectChange}
-      />
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      <Button type='submit' onClick={handleSubmit} primary>Submit</Button>
-    </Form>
-  );
+      <Form error={!!error}>
+        <Grid stackable>
+        <Grid.Row columns="equal"> 
+        <Grid.Column width={8}>
+              <Form.Field
+                control={Input}
+                label='First Name'
+                placeholder='First Name'
+                name='firstName'
+                value={formData.firstName}
+                onChange={handleChange}
+                style={inputStyle}
+              />
+            </Grid.Column>
+            <Grid.Column>
+              <Form.Field
+                control={Input}
+                label='Last Name'
+                placeholder='Last Name'
+                name='lastName'
+                value={formData.lastName}
+                onChange={handleChange}
+                style={inputStyle}
+              />
+            </Grid.Column>
+          </Grid.Row>
+      <Grid.Row columns={1}>
+        <Grid.Column>
+          <Form.Field
+            control={Input}
+            label='Email'
+            placeholder='Email'
+            name='email'
+            type='email'
+            value={formData.email}
+            onChange={handleChange}
+            style={inputStyle}
+          />
+        </Grid.Column>
+      </Grid.Row>
+      <Grid.Row columns={2}>
+        <Grid.Column>
+          <Form.Field
+            control={Input}
+            label='Birthday'
+            placeholder='Birthday'
+            name='birthday'
+            type='date'
+            value={formData.birthday}
+            onChange={handleChange}
+            style={inputStyle}
+          />
+        </Grid.Column>
+        <Grid.Column>
+          <Form.Field
+            control={Select}
+            label='Blood Group'
+            options={bloodGroupOptions}
+            placeholder='Select Blood Group'
+            name='bloodGroup'
+            value={formData.bloodGroup}
+            onChange={handleSelectChange}
+          />
+        </Grid.Column>
+      </Grid.Row>
+    </Grid>
+    {error && <Message error content={error} />}
+    <Button type='submit' onClick={handleSubmit} primary>Submit</Button>
+  </Form>
+);
 };
 
 export default FormComponent;

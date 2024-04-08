@@ -71,3 +71,7 @@
   background-color: #f2711c !important; /* Orange background */
   color: white !important;
 }
+
+.padded-label {
+  padding-left: 20px;
+}
