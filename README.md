@@ -17,7 +17,7 @@ To get started with the UMass Memorial Project, follow these steps:
 
 ```bash
 git clone https://github.com/Akkikens/UMassMemorialProject.git
-cd UMassMemorialProject
+cd UMassMemorialProject/umass-react-test
 npm install
 npm start
 ```
