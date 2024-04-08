@@ -8,8 +8,6 @@ Developed with React, Semantic UI, the UMass Memorial Project offers a responsiv
 - [Installation](#installation)
 - [Usage](#usage)
 - [Features](#features)
-- [Contributing](#contributing)
-- [License](#license)
 - [Credits](#credits)
 - [Contact Information](#contact-information)
 
